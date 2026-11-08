@@ -12,17 +12,23 @@ const API_URL =
 export default function App() {
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // Fetch country data when the screen opens
+  // Fetch country data from the API
   useEffect(() => {
     const fetchCountries = async () => {
       try {
         const response = await fetch(API_URL);
-        const data = await response.json();
 
+        if (!response.ok) {
+          throw new Error('Failed to fetch country data.');
+        }
+
+        const data = await response.json();
         setCountries(data.slice(0, 20));
-      } catch (error) {
-        console.log('Fetch error:', error);
+      } catch (err) {
+        setError('Unable to load countries. Please try again.');
+        console.log(err);
       } finally {
         setLoading(false);
       }
@@ -43,6 +49,8 @@ export default function App() {
           <ActivityIndicator size="large" color="#6C63FF" />
           <Text style={styles.message}>Loading countries...</Text>
         </View>
+      ) : error ? (
+        <Text style={styles.error}>{error}</Text>
       ) : (
         <Text style={styles.message}>
           {countries.length} countries loaded!
@@ -77,5 +85,10 @@ const styles = StyleSheet.create({
   message: {
     marginTop: 15,
     color: '#5146A5',
+  },
+  error: {
+    color: '#D64545',
+    marginTop: 20,
+    textAlign: 'center',
   },
 });
