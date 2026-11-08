@@ -11,15 +11,16 @@ import {
   Easing,
 } from 'react-native';
 
-// Free Countries API
+// Free country API - no API key required
 const API_URL =
   'https://countries.dev/countries?fields=name,capital,region,population,flag&limit=20';
 
-// Animated country card
+// Country card with fade and slide animation
 function CountryCard({ item, index }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(25)).current;
 
+  // Animate each card when it appears
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -48,6 +49,7 @@ function CountryCard({ item, index }) {
         },
       ]}
     >
+      {/* Country flag and name */}
       <View style={styles.countryHeader}>
         <View style={styles.flagContainer}>
           <Text style={styles.flag}>{item.flag || '🌍'}</Text>
@@ -67,6 +69,7 @@ function CountryCard({ item, index }) {
 
       <View style={styles.divider} />
 
+      {/* Country details */}
       <View style={styles.detailRow}>
         <Text style={styles.detailLabel}>🏙️ Capital</Text>
         <Text style={styles.detailValue}>
@@ -87,42 +90,47 @@ function CountryCard({ item, index }) {
 }
 
 export default function App() {
-  // Store country data
+  // Store API data and loading information
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Header animation
+  // Control the header animation
   const headerAnim = useRef(new Animated.Value(0)).current;
 
-  // Fetch country data
+  // Fetch country data when the app opens
   useEffect(() => {
     const fetchCountries = async () => {
       try {
         const response = await fetch(API_URL);
 
+        // Check if the API request was successful
         if (!response.ok) {
           throw new Error(`HTTP Error: ${response.status}`);
         }
 
+        // Convert the response into JSON
         const data = await response.json();
 
+        // Make sure the API returns a list
         if (!Array.isArray(data)) {
           throw new Error('Invalid API response.');
         }
 
         setCountries(data);
       } catch (err) {
+        // Display an error if fetching fails
         console.log('API Error:', err);
         setError('Unable to load countries. Please check your connection.');
       } finally {
+        // Hide the loading screen
         setLoading(false);
       }
     };
 
     fetchCountries();
 
-    // Animate the header
+    // Animate the header when the app opens
     Animated.timing(headerAnim, {
       toValue: 1,
       duration: 800,
@@ -131,19 +139,22 @@ export default function App() {
     }).start();
   }, []);
 
-  // Loading screen
+  // Display loading screen
   if (loading) {
     return (
       <View style={styles.center}>
         <StatusBar barStyle="dark-content" backgroundColor="#F7F3FF" />
+
         <View style={styles.loadingIcon}>
           <Text style={styles.loadingEmoji}>🌍</Text>
         </View>
+
         <ActivityIndicator
           size="large"
           color="#9061F9"
           style={styles.loader}
         />
+
         <Text style={styles.loadingTitle}>Exploring the world</Text>
         <Text style={styles.loadingSubtitle}>
           Preparing your travel discovery...
@@ -152,13 +163,15 @@ export default function App() {
     );
   }
 
-  // Error screen
+  // Display error screen
   if (error) {
     return (
       <View style={styles.center}>
         <StatusBar barStyle="dark-content" backgroundColor="#F7F3FF" />
         <Text style={styles.errorIcon}>🌧️</Text>
-        <Text style={styles.errorTitle}>Oops! Something went wrong</Text>
+        <Text style={styles.errorTitle}>
+          Oops! Something went wrong
+        </Text>
         <Text style={styles.error}>{error}</Text>
       </View>
     );
@@ -172,7 +185,7 @@ export default function App() {
       <View style={styles.circleOne} />
       <View style={styles.circleTwo} />
 
-      {/* Animated header */}
+      {/* Animated application header */}
       <Animated.View
         style={[
           styles.header,
@@ -190,7 +203,9 @@ export default function App() {
         ]}
       >
         <View style={styles.topLabel}>
-          <Text style={styles.topLabelText}>✦ YOUR TRAVEL COMPANION ✦</Text>
+          <Text style={styles.topLabelText}>
+            ✦ YOUR TRAVEL COMPANION ✦
+          </Text>
         </View>
 
         <Text style={styles.title}>World Explorer</Text>
@@ -198,34 +213,42 @@ export default function App() {
           Discover the beauty of our world 🌷
         </Text>
 
+        {/* Welcome banner */}
         <View style={styles.banner}>
           <View>
-            <Text style={styles.bannerSmall}>YOUR WORLD AT A GLANCE</Text>
+            <Text style={styles.bannerSmall}>
+              YOUR WORLD AT A GLANCE
+            </Text>
             <Text style={styles.bannerTitle}>Explore Beyond</Text>
             <Text style={styles.bannerDescription}>
               Every country has a story.
             </Text>
           </View>
+
           <Text style={styles.bannerEmoji}>🌎</Text>
         </View>
       </Animated.View>
 
-      {/* Country section */}
+      {/* Country list heading and count */}
       <View style={styles.sectionHeader}>
         <View>
-          <Text style={styles.sectionTitle}>Discover Countries</Text>
+          <Text style={styles.sectionTitle}>
+            Discover Countries
+          </Text>
           <Text style={styles.sectionSubtitle}>
             A little journey around the globe
           </Text>
         </View>
 
         <View style={styles.countBadge}>
-          <Text style={styles.countNumber}>{countries.length}</Text>
+          <Text style={styles.countNumber}>
+            {countries.length}
+          </Text>
           <Text style={styles.countLabel}>COUNTRIES</Text>
         </View>
       </View>
 
-      {/* Country list */}
+      {/* Display country information using FlatList */}
       <FlatList
         data={countries}
         keyExtractor={(item, index) =>
@@ -237,11 +260,13 @@ export default function App() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>No countries found.</Text>
+          <Text style={styles.emptyText}>
+            No countries found.
+          </Text>
         }
       />
 
-      {/* Footer */}
+      {/* Application footer */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>
           Made with 💜 for curious explorers
@@ -251,7 +276,7 @@ export default function App() {
   );
 }
 
-// Purple and lavender design
+// Purple and lavender application design
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -261,6 +286,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 
+  // Loading and error screen
   center: {
     flex: 1,
     backgroundColor: '#F7F3FF',
@@ -269,6 +295,7 @@ const styles = StyleSheet.create({
     padding: 25,
   },
 
+  // Decorative background circles
   circleOne: {
     position: 'absolute',
     width: 190,
@@ -291,6 +318,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
 
+  // Header design
   header: {
     marginBottom: 25,
   },
@@ -324,6 +352,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 
+  // Welcome banner
   banner: {
     backgroundColor: '#8054CE',
     borderRadius: 23,
@@ -363,6 +392,7 @@ const styles = StyleSheet.create({
     fontSize: 48,
   },
 
+  // Country section heading
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -402,6 +432,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
+  // Country list and cards
   list: {
     paddingBottom: 15,
   },
@@ -486,6 +517,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 
+  // Loading screen design
   loadingIcon: {
     width: 85,
     height: 85,
@@ -516,6 +548,7 @@ const styles = StyleSheet.create({
     marginTop: 7,
   },
 
+  // Error screen design
   errorIcon: {
     fontSize: 45,
     marginBottom: 15,
@@ -541,6 +574,7 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
 
+  // Footer design
   footer: {
     alignItems: 'center',
     paddingVertical: 12,
