@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
+  FlatList,
 } from 'react-native';
 
 const API_URL =
@@ -14,7 +15,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Fetch country data from the API
+  // Fetch country data when the screen opens
   useEffect(() => {
     const fetchCountries = async () => {
       try {
@@ -52,9 +53,19 @@ export default function App() {
       ) : error ? (
         <Text style={styles.error}>{error}</Text>
       ) : (
-        <Text style={styles.message}>
-          {countries.length} countries loaded!
-        </Text>
+        <FlatList
+          data={countries}
+          keyExtractor={(item, index) =>
+            item.name?.common || index.toString()
+          }
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Text style={styles.countryName}>
+                {item.name?.common}
+              </Text>
+            </View>
+          )}
+        />
       )}
     </View>
   );
@@ -64,19 +75,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F3F1FF',
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 20,
+    paddingTop: 55,
   },
   title: {
     fontSize: 27,
     fontWeight: 'bold',
     color: '#5146A5',
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 14,
     color: '#77718F',
+    textAlign: 'center',
     marginTop: 8,
+    marginBottom: 20,
   },
   loading: {
     marginTop: 30,
@@ -88,7 +101,17 @@ const styles = StyleSheet.create({
   },
   error: {
     color: '#D64545',
-    marginTop: 20,
     textAlign: 'center',
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    padding: 17,
+    borderRadius: 14,
+    marginBottom: 12,
+  },
+  countryName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#5146A5',
   },
 });
