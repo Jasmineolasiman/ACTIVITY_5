@@ -10,6 +10,7 @@ import {
   Animated,
   Easing,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Free country API - no API key required
 const API_URL =
@@ -20,7 +21,7 @@ function CountryCard({ item, index }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(25)).current;
 
-  // Animate each card when it appears
+  // Animate each country card
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -90,7 +91,7 @@ function CountryCard({ item, index }) {
 }
 
 export default function App() {
-  // Store API data and loading information
+  // Store country data and loading status
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -104,33 +105,32 @@ export default function App() {
       try {
         const response = await fetch(API_URL);
 
-        // Check if the API request was successful
+        // Check API response
         if (!response.ok) {
           throw new Error(`HTTP Error: ${response.status}`);
         }
 
-        // Convert the response into JSON
+        // Convert response into JSON
         const data = await response.json();
 
-        // Make sure the API returns a list
         if (!Array.isArray(data)) {
           throw new Error('Invalid API response.');
         }
 
         setCountries(data);
       } catch (err) {
-        // Display an error if fetching fails
         console.log('API Error:', err);
-        setError('Unable to load countries. Please check your connection.');
+        setError(
+          'Unable to load countries. Please check your connection.'
+        );
       } finally {
-        // Hide the loading screen
         setLoading(false);
       }
     };
 
     fetchCountries();
 
-    // Animate the header when the app opens
+    // Animate the application header
     Animated.timing(headerAnim, {
       toValue: 1,
       duration: 800,
@@ -139,150 +139,190 @@ export default function App() {
     }).start();
   }, []);
 
-  // Display loading screen
+  // Loading screen
   if (loading) {
     return (
-      <View style={styles.center}>
-        <StatusBar barStyle="dark-content" backgroundColor="#F7F3FF" />
-
-        <View style={styles.loadingIcon}>
-          <Text style={styles.loadingEmoji}>🌍</Text>
-        </View>
-
-        <ActivityIndicator
-          size="large"
-          color="#9061F9"
-          style={styles.loader}
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor="#F7F3FF"
         />
 
-        <Text style={styles.loadingTitle}>Exploring the world</Text>
-        <Text style={styles.loadingSubtitle}>
-          Preparing your travel discovery...
-        </Text>
-      </View>
+        <View style={styles.center}>
+          <View style={styles.loadingIcon}>
+            <Text style={styles.loadingEmoji}>🌍</Text>
+          </View>
+
+          <ActivityIndicator
+            size="large"
+            color="#9061F9"
+            style={styles.loader}
+          />
+
+          <Text style={styles.loadingTitle}>
+            Exploring the world
+          </Text>
+
+          <Text style={styles.loadingSubtitle}>
+            Preparing your travel discovery...
+          </Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
-  // Display error screen
+  // Error screen
   if (error) {
     return (
-      <View style={styles.center}>
-        <StatusBar barStyle="dark-content" backgroundColor="#F7F3FF" />
-        <Text style={styles.errorIcon}>🌧️</Text>
-        <Text style={styles.errorTitle}>
-          Oops! Something went wrong
-        </Text>
-        <Text style={styles.error}>{error}</Text>
-      </View>
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor="#F7F3FF"
+        />
+
+        <View style={styles.center}>
+          <Text style={styles.errorIcon}>🌧️</Text>
+
+          <Text style={styles.errorTitle}>
+            Oops! Something went wrong
+          </Text>
+
+          <Text style={styles.error}>{error}</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F7F3FF" />
+    <SafeAreaView
+      style={styles.safeArea}
+      edges={['top', 'bottom']}
+    >
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="#F7F3FF"
+      />
 
-      {/* Decorative background circles */}
-      <View style={styles.circleOne} />
-      <View style={styles.circleTwo} />
+      <View style={styles.container}>
+        {/* Decorative background circles */}
+        <View style={styles.circleOne} />
+        <View style={styles.circleTwo} />
 
-      {/* Animated application header */}
-      <Animated.View
-        style={[
-          styles.header,
-          {
-            opacity: headerAnim,
-            transform: [
-              {
-                translateY: headerAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [-25, 0],
-                }),
-              },
-            ],
-          },
-        ]}
-      >
-        <View style={styles.topLabel}>
-          <Text style={styles.topLabelText}>
-            ✦ YOUR TRAVEL COMPANION ✦
-          </Text>
-        </View>
-
-        <Text style={styles.title}>World Explorer</Text>
-        <Text style={styles.subtitle}>
-          Discover the beauty of our world 🌷
-        </Text>
-
-        {/* Welcome banner */}
-        <View style={styles.banner}>
-          <View>
-            <Text style={styles.bannerSmall}>
-              YOUR WORLD AT A GLANCE
-            </Text>
-            <Text style={styles.bannerTitle}>Explore Beyond</Text>
-            <Text style={styles.bannerDescription}>
-              Every country has a story.
+        {/* Animated application header */}
+        <Animated.View
+          style={[
+            styles.header,
+            {
+              opacity: headerAnim,
+              transform: [
+                {
+                  translateY: headerAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-25, 0],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <View style={styles.topLabel}>
+            <Text style={styles.topLabelText}>
+              ✦ YOUR TRAVEL COMPANION ✦
             </Text>
           </View>
 
-          <Text style={styles.bannerEmoji}>🌎</Text>
-        </View>
-      </Animated.View>
+          <Text style={styles.title}>World Explorer</Text>
 
-      {/* Country list heading and count */}
-      <View style={styles.sectionHeader}>
-        <View>
-          <Text style={styles.sectionTitle}>
-            Discover Countries
+          <Text style={styles.subtitle}>
+            Discover the beauty of our world 🌷
           </Text>
-          <Text style={styles.sectionSubtitle}>
-            A little journey around the globe
-          </Text>
+
+          {/* Welcome banner */}
+          <View style={styles.banner}>
+            <View style={styles.bannerInfo}>
+              <Text style={styles.bannerSmall}>
+                YOUR WORLD AT A GLANCE
+              </Text>
+
+              <Text style={styles.bannerTitle}>
+                Explore Beyond
+              </Text>
+
+              <Text style={styles.bannerDescription}>
+                Every country has a story.
+              </Text>
+            </View>
+
+            <Text style={styles.bannerEmoji}>🌎</Text>
+          </View>
+        </Animated.View>
+
+        {/* Country section heading */}
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionInfo}>
+            <Text style={styles.sectionTitle}>
+              Discover Countries
+            </Text>
+
+            <Text style={styles.sectionSubtitle}>
+              A little journey around the globe
+            </Text>
+          </View>
+
+          <View style={styles.countBadge}>
+            <Text style={styles.countNumber}>
+              {countries.length}
+            </Text>
+
+            <Text style={styles.countLabel}>
+              COUNTRIES
+            </Text>
+          </View>
         </View>
 
-        <View style={styles.countBadge}>
-          <Text style={styles.countNumber}>
-            {countries.length}
+        {/* Scrollable country list */}
+        <FlatList
+          style={styles.flatList}
+          data={countries}
+          keyExtractor={(item, index) =>
+            item.name || index.toString()
+          }
+          renderItem={({ item, index }) => (
+            <CountryCard item={item} index={index} />
+          )}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.list}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>
+              No countries found.
+            </Text>
+          }
+        />
+
+        {/* Footer stays inside the safe area */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            Made with 💜 for curious explorers
           </Text>
-          <Text style={styles.countLabel}>COUNTRIES</Text>
         </View>
       </View>
-
-      {/* Display country information using FlatList */}
-      <FlatList
-        data={countries}
-        keyExtractor={(item, index) =>
-          item.name || index.toString()
-        }
-        renderItem={({ item, index }) => (
-          <CountryCard item={item} index={index} />
-        )}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.list}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>
-            No countries found.
-          </Text>
-        }
-      />
-
-      {/* Application footer */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          Made with 💜 for curious explorers
-        </Text>
-      </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 // Purple and lavender application design
 const styles = StyleSheet.create({
+  // Main safe area and screen layout
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F7F3FF',
+  },
+
   container: {
     flex: 1,
     backgroundColor: '#F7F3FF',
-    paddingHorizontal: 20,
-    paddingTop: 45,
+    paddingHorizontal: 16,
+    paddingTop: 8,
     overflow: 'hidden',
   },
 
@@ -320,7 +360,7 @@ const styles = StyleSheet.create({
 
   // Header design
   header: {
-    marginBottom: 25,
+    marginBottom: 16,
   },
 
   topLabel: {
@@ -329,7 +369,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 7,
     borderRadius: 20,
-    marginBottom: 12,
+    marginBottom: 10,
   },
 
   topLabelText: {
@@ -340,7 +380,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: '900',
     color: '#54318C',
     letterSpacing: -0.8,
@@ -349,15 +389,15 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 13,
     color: '#9685B0',
-    marginTop: 5,
+    marginTop: 4,
   },
 
   // Welcome banner
   banner: {
     backgroundColor: '#8054CE',
-    borderRadius: 23,
-    padding: 20,
-    marginTop: 20,
+    borderRadius: 20,
+    padding: 16,
+    marginTop: 14,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -366,6 +406,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
+  },
+
+  bannerInfo: {
+    flex: 1,
   },
 
   bannerSmall: {
@@ -377,9 +421,9 @@ const styles = StyleSheet.create({
 
   bannerTitle: {
     color: '#FFFFFF',
-    fontSize: 22,
+    fontSize: 21,
     fontWeight: 'bold',
-    marginTop: 7,
+    marginTop: 6,
   },
 
   bannerDescription: {
@@ -389,7 +433,8 @@ const styles = StyleSheet.create({
   },
 
   bannerEmoji: {
-    fontSize: 48,
+    fontSize: 43,
+    marginLeft: 8,
   },
 
   // Country section heading
@@ -397,7 +442,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 10,
+  },
+
+  sectionInfo: {
+    flex: 1,
   },
 
   sectionTitle: {
@@ -418,6 +467,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 13,
     alignItems: 'center',
+    marginLeft: 8,
   },
 
   countNumber: {
@@ -432,11 +482,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  // Country list and cards
-  list: {
-    paddingBottom: 15,
+  // Country list takes the remaining screen space
+  flatList: {
+    flex: 1,
   },
 
+  list: {
+    paddingBottom: 12,
+  },
+
+  // Country cards
   card: {
     backgroundColor: '#FFFFFF',
     padding: 17,
@@ -577,7 +632,8 @@ const styles = StyleSheet.create({
   // Footer design
   footer: {
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingTop: 8,
+    paddingBottom: 6,
     backgroundColor: '#F7F3FF',
   },
 
