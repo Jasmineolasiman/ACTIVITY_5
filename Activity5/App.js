@@ -302,7 +302,7 @@ export default function App() {
         {/* Footer stays inside the safe area */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            Made with 💜 for curious explorers
+            Made with 💜 Jasmine Olasiman
           </Text>
         </View>
       </View>
