@@ -1,13 +1,28 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 
 export default function App() {
+  // Track the loading status
+  const [loading, setLoading] = useState(true);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>🌍 World Explorer</Text>
       <Text style={styles.subtitle}>
         Discover countries around the world
       </Text>
+
+      {loading && (
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" color="#6C63FF" />
+          <Text style={styles.message}>Loading countries...</Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -29,5 +44,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#77718F',
     marginTop: 8,
+  },
+  loading: {
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  message: {
+    marginTop: 12,
+    color: '#5146A5',
   },
 });
